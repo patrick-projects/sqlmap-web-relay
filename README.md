@@ -4,6 +4,34 @@
 
 sqlmap is an open source penetration testing tool that automates the process of detecting and exploiting SQL injection flaws and taking over of database servers. It comes with a powerful detection engine, many niche features for the ultimate penetration tester, and a broad range of switches including database fingerprinting, over data fetching from the database, accessing the underlying file system, and executing commands on the operating system via out-of-band connections.
 
+## 🚀 Enhanced Features
+
+This fork adds significant enhancements to sqlmap:
+
+### Browser-Based HTTP Relay Web UI
+- **Remote scanning via browser**: Route sqlmap requests through a remote browser when direct network access isn't available
+- **Web interface**: Full-featured web UI for configuring scans, monitoring progress, and handling interactive questions
+- **HTTPS support**: Automatic CONNECT tunneling with self-signed certificates for HTTPS targets
+- **Interactive prompts**: Reliable question detection and blocking ensures sqlmap waits for your answers
+
+**Quick Start:**
+```bash
+# On your machine (where sqlmap runs):
+sudo python3 sqlmap.py --web-relay
+
+# Then open http://YOUR_IP/ in the remote browser
+```
+
+See [`extra/webui/README.md`](extra/webui/README.md) for detailed setup instructions.
+
+### Core sqlmap Improvements
+- **GraphQL injection support**: Automatic detection and selective injection into GraphQL `variables` fields
+- **HTTP out-of-band exfiltration**: New `--http-domain` option for HTTP-based data exfiltration (complement to DNS OOB)
+- **Enhanced WAF detection**: Smarter heuristics using HTTP status codes, response headers, and server names
+- **Expanded database support**: New payloads for Snowflake, CrateDB, H2, HSQLDB, DB2, Informix, Vertica, MonetDB, Derby, Altibase, MimerSQL
+- **JSON injection boundaries**: PostgreSQL `::text` and `::jsonb` cast operators, generic JSON OR-based boundaries
+- **Modern WAF evasion**: Five new tamper scripts (`unicodenormalize`, `space2newline`, `ncharencode`, `concat2pipe`, `controlcharencode`)
+
 Screenshots
 ----
 
