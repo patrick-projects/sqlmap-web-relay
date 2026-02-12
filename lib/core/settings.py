@@ -391,6 +391,7 @@ BASIC_HELP_ITEMS = (
     "tor",
     "sqlmapShell",
     "wizard",
+    "webRelay",
 )
 
 # Tags used for value replacements inside shell scripts
@@ -856,6 +857,9 @@ MIN_HTTPX_VERSION = "0.28"
 
 # Regular expression for XML POST data
 XML_RECOGNITION_REGEX = r"(?s)\A\s*<[^>]+>(.+>)?\s*\Z"
+
+# Regular expression used for detecting GraphQL POST data
+GRAPHQL_RECOGNITION_REGEX = r'(?s)\A\s*\{\s*"query"\s*:\s*"[^"]*(?:query|mutation|subscription|\{)[^"]*"'
 
 # Regular expression used for detecting JSON POST data
 JSON_RECOGNITION_REGEX = r'(?s)\A(\s*\[)*\s*\{.*"[^"]+"\s*:\s*("[^"]*"|\d+|true|false|null|\[).*\}\s*(\]\s*)*\Z'

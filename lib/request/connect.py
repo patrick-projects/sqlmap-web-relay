@@ -1122,7 +1122,7 @@ class Connect(object):
                     payload = payload.replace("&#", SAFE_HEX_MARKER)
                     payload = payload.replace('&', "&amp;").replace('>', "&gt;").replace('<', "&lt;").replace('"', "&quot;").replace("'", "&apos;")  # Reference: https://stackoverflow.com/a/1091953
                     payload = payload.replace(SAFE_HEX_MARKER, "&#")
-                elif kb.postHint == POST_HINT.JSON:
+                elif kb.postHint in (POST_HINT.JSON, POST_HINT.GRAPHQL):
                     payload = escapeJsonValue(payload)
                 elif kb.postHint == POST_HINT.JSON_LIKE:
                     payload = payload.replace("'", REPLACEMENT_MARKER).replace('"', "'").replace(REPLACEMENT_MARKER, '"')
@@ -1364,7 +1364,7 @@ class Connect(object):
                         value = urldecode(value, convall=True, spaceplus=(item == post and kb.postSpaceToPlus))
                         variables[name] = value
 
-            if post and kb.postHint in (POST_HINT.JSON, POST_HINT.JSON_LIKE):
+            if post and kb.postHint in (POST_HINT.JSON, POST_HINT.JSON_LIKE, POST_HINT.GRAPHQL):
                 for name, value in (parseJson(post) or {}).items():
                     if safeVariableNaming(name) != name:
                         conf.evalCode = re.sub(r"\b%s\b" % re.escape(name), safeVariableNaming(name), conf.evalCode)
@@ -1457,7 +1457,7 @@ class Connect(object):
                                     found = True
                                     post = re.sub(r"(?s)(\b%s>)(.*?)(</[^<]*\b%s>)" % (re.escape(name), re.escape(name)), r"\g<1>%s\g<3>" % entry.replace('\\', r'\\'), post)
 
-                            elif kb.postHint in (POST_HINT.JSON, POST_HINT.JSON_LIKE):
+                            elif kb.postHint in (POST_HINT.JSON, POST_HINT.JSON_LIKE, POST_HINT.GRAPHQL):
                                 match = re.search(r"['\"]%s['\"]:" % re.escape(name), post)
                                 if match:
                                     quote = match.group(0)[0]
@@ -1493,7 +1493,7 @@ class Connect(object):
 
                         if not found:
                             if post is not None:
-                                if kb.postHint in (POST_HINT.JSON, POST_HINT.JSON_LIKE):
+                                if kb.postHint in (POST_HINT.JSON, POST_HINT.JSON_LIKE, POST_HINT.GRAPHQL):
                                     match = re.search(r"['\"]", post)
                                     if match:
                                         quote = match.group(0)

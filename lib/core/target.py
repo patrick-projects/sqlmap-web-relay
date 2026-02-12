@@ -61,6 +61,7 @@ from lib.core.settings import CUSTOM_INJECTION_MARK_CHAR
 from lib.core.settings import DEFAULT_GET_POST_DELIMITER
 from lib.core.settings import HOST_ALIASES
 from lib.core.settings import INJECT_HERE_REGEX
+from lib.core.settings import GRAPHQL_RECOGNITION_REGEX
 from lib.core.settings import JSON_LIKE_RECOGNITION_REGEX
 from lib.core.settings import JSON_RECOGNITION_REGEX
 from lib.core.settings import MULTIPART_RECOGNITION_REGEX
@@ -144,7 +145,49 @@ def _setRequestParams():
                 if kb.processUserMarks:
                     kb.testOnlyCustom = True
 
-        if re.search(JSON_RECOGNITION_REGEX, conf.data):
+        if re.search(GRAPHQL_RECOGNITION_REGEX, conf.data):
+            message = "GraphQL data found in %s body. " % conf.method
+            message += "Do you want to process it? [Y/n/q] "
+            choice = readInput(message, default='Y').upper()
+
+            if choice == 'Q':
+                raise SqlmapUserQuitException
+            elif choice == 'Y':
+                kb.postHint = POST_HINT.GRAPHQL
+                if not (kb.processUserMarks and kb.customInjectionMark in conf.data):
+                    conf.data = getattr(conf.data, UNENCODED_ORIGINAL_VALUE, conf.data)
+                    conf.data = conf.data.replace(kb.customInjectionMark, ASTERISK_MARKER)
+
+                    # For GraphQL, only inject into "variables" values,
+                    # not the "query" string itself
+                    _variablesMatch = re.search(r'"variables"\s*:\s*\{', conf.data)
+                    if _variablesMatch:
+                        # Find the variables object boundaries
+                        _start = _variablesMatch.end() - 1
+                        _depth = 0
+                        _end = _start
+                        for _i in range(_start, len(conf.data)):
+                            if conf.data[_i] == '{':
+                                _depth += 1
+                            elif conf.data[_i] == '}':
+                                _depth -= 1
+                                if _depth == 0:
+                                    _end = _i + 1
+                                    break
+
+                        _varSection = conf.data[_start:_end]
+                        _processed = re.sub(r'("(?P<name>[^"]+)"\s*:\s*".*?)"(?<!\\")', functools.partial(process, repl=r'\g<1>%s"' % kb.customInjectionMark), _varSection)
+                        _processed = re.sub(r'("(?P<name>[^"]+)"\s*:\s*")"', functools.partial(process, repl=r'\g<1>%s"' % kb.customInjectionMark), _processed)
+                        _processed = re.sub(r'("(?P<name>[^"]+)"\s*:\s*)(-?\d[\d\.]*)\b', functools.partial(process, repl=r'\g<1>\g<3>%s' % kb.customInjectionMark), _processed)
+                        _processed = re.sub(r'("(?P<name>[^"]+)"\s*:\s*)((true|false|null))\b', functools.partial(process, repl=r'\g<1>\g<3>%s' % kb.customInjectionMark), _processed)
+                        conf.data = conf.data[:_start] + _processed + conf.data[_end:]
+                    else:
+                        # No variables object - try injecting inline query arguments
+                        # Process as standard JSON but skip the "query" key
+                        conf.data = re.sub(r'("(?P<name>(?!query)[^"]+)"\s*:\s*".*?)"(?<!\\")', functools.partial(process, repl=r'\g<1>%s"' % kb.customInjectionMark), conf.data)
+                        conf.data = re.sub(r'("(?P<name>(?!query)[^"]+)"\s*:\s*)(-?\d[\d\.]*)\b', functools.partial(process, repl=r'\g<1>\g<3>%s' % kb.customInjectionMark), conf.data)
+
+        elif re.search(JSON_RECOGNITION_REGEX, conf.data):
             message = "JSON data found in %s body. " % conf.method
             message += "Do you want to process it? [Y/n/q] "
             choice = readInput(message, default='Y').upper()

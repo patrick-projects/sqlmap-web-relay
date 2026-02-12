@@ -140,6 +140,7 @@ class POST_HINT(object):
     MULTIPART = "MULTIPART"
     XML = "XML (generic)"
     ARRAY_LIKE = "Array-like"
+    GRAPHQL = "GraphQL"
 
 class HTTPMETHOD(object):
     GET = "GET"

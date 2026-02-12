@@ -619,6 +619,15 @@ def main():
 
 if __name__ == "__main__":
     try:
+        if "--web-relay" in sys.argv:
+            import importlib.util as _ilu
+            _rp = os.path.join(os.path.dirname(os.path.abspath(__file__)), "extra", "webui", "relay.py")
+            _sp = _ilu.spec_from_file_location("relay", _rp)
+            _rm = _ilu.module_from_spec(_sp)
+            _sp.loader.exec_module(_rm)
+            sys.argv = [sys.argv[0]] + [a for a in sys.argv[1:] if a != "--web-relay"]
+            _rm.main()
+            raise SystemExit(0)
         main()
     except KeyboardInterrupt:
         pass

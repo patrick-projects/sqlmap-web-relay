@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "sqlmap Browser Scanner",
+  "version": "1.0.0",
+  "description": "SQL injection scanner that runs entirely in your browser - requests originate from your machine, no Python required.",
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "sqlmap Browser Scanner"
+  }
+}

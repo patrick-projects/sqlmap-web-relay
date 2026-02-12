@@ -62,6 +62,7 @@ from thirdparty.bottle.bottle import hook
 from thirdparty.bottle.bottle import post
 from thirdparty.bottle.bottle import request
 from thirdparty.bottle.bottle import response
+from thirdparty.bottle.bottle import route
 from thirdparty.bottle.bottle import run
 from thirdparty.bottle.bottle import server_names
 from thirdparty import six
@@ -330,8 +331,11 @@ def security_headers(json_header=True):
     response.headers["Pragma"] = "no-cache"
     response.headers["Cache-Control"] = "no-cache"
     response.headers["Expires"] = "0"
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
 
-    if json_header:
+    if json_header and "text/html" not in (response.content_type or ""):
         response.content_type = "application/json; charset=UTF-8"
 
 ##############################
@@ -366,6 +370,24 @@ def error500(error=None):
 def path_401():
     response.status = 401
     return response
+
+@route('<path:path>', method='OPTIONS')
+def cors_preflight(path):
+    return ''
+
+def _serve_webui():
+    webui_path = os.path.join(paths.SQLMAP_EXTRAS_PATH, "webui", "index.html")
+    if os.path.isfile(webui_path):
+        response.content_type = "text/html; charset=UTF-8"
+        with openFile(webui_path, "rb") as f:
+            return getText(f.read())
+    response.status = 404
+    return "Web UI not found"
+
+@get('/')
+@get('/ui')
+def webui():
+    return _serve_webui()
 
 #############################
 # Task management functions #

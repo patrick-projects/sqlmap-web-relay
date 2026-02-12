@@ -2022,6 +2022,7 @@ def _setConfAttributes():
     conf.dbmsConnector = None
     conf.dbmsHandler = None
     conf.dnsServer = None
+    conf.httpCallbackServer = None
     conf.dumpPath = None
     conf.fileWriteType = None
     conf.HARCollectorFactory = None
@@ -2501,6 +2502,27 @@ def _setDNSServer():
         errMsg += "for incoming address resolution attempts"
         raise SqlmapMissingPrivileges(errMsg)
 
+def _setHTTPCallbackServer():
+    if not conf.httpDomain:
+        return
+
+    infoMsg = "setting up HTTP callback server instance"
+    logger.info(infoMsg)
+
+    try:
+        port = 8080
+        if ':' in conf.httpDomain:
+            _, port = conf.httpDomain.rsplit(':', 1)
+            port = int(port)
+
+        from lib.request.httpcallback import HTTPCallbackServer
+        conf.httpCallbackServer = HTTPCallbackServer(port=port)
+        conf.httpCallbackServer.run()
+    except socket.error as ex:
+        errMsg = "there was an error while setting up "
+        errMsg += "HTTP callback server instance ('%s')" % getSafeExString(ex)
+        raise SqlmapGenericException(errMsg)
+
 def _setProxyList():
     if not conf.proxyFile:
         return
@@ -2953,6 +2975,7 @@ def init():
     _setProxyList()
     _setTorProxySettings()
     _setDNSServer()
+    _setHTTPCallbackServer()
     _adjustLoggingFormatter()
     _setMultipleTargets()
     _listTamperingFunctions()

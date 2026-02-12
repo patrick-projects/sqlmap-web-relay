@@ -432,6 +432,10 @@ def cmdLineParser(argv=None):
         techniques.add_argument("--dns-domain", dest="dnsDomain",
             help="Domain name used for DNS exfiltration attack")
 
+        techniques.add_argument("--http-domain", dest="httpDomain",
+            help="Domain/IP:port used for HTTP out-of-band exfiltration "
+                 "(e.g. attacker.com:8080)")
+
         techniques.add_argument("--second-url", dest="secondUrl",
             help="Resulting page URL searched for second-order response")
 
@@ -817,6 +821,13 @@ def cmdLineParser(argv=None):
         miscellaneous.add_argument("--wizard", dest="wizard", action="store_true",
             help="Simple wizard interface for beginner users")
 
+        miscellaneous.add_argument("--web-relay", dest="webRelay", action="store_true",
+            help="Start browser relay mode. Routes sqlmap requests through a "
+                 "remote machine's browser (for targets only reachable from that "
+                 "machine). Run 'python3 sqlmap.py --web-relay', open the URL "
+                 "shown at startup in the remote browser, configure Burp Suite "
+                 "as instructed, enter target details and click Start")
+
         # Hidden and/or experimental options
         parser.add_argument("--crack", dest="hashFile",
             help=SUPPRESS)  # "Load and crack hashes from a file (standalone)"
@@ -1126,8 +1137,8 @@ def cmdLineParser(argv=None):
         else:
             args.stdinPipe = None
 
-        if not any((args.direct, args.url, args.logFile, args.bulkFile, args.googleDork, args.configFile, args.requestFile, args.updateAll, args.smokeTest, args.vulnTest, args.wizard, args.dependencies, args.purge, args.listTampers, args.hashFile, args.stdinPipe)):
-            errMsg = "missing a mandatory option (-d, -u, -l, -m, -r, -g, -c, --wizard, --shell, --update, --purge, --list-tampers or --dependencies). "
+        if not any((args.direct, args.url, args.logFile, args.bulkFile, args.googleDork, args.configFile, args.requestFile, args.updateAll, args.smokeTest, args.vulnTest, args.wizard, args.dependencies, args.purge, args.listTampers, args.hashFile, args.stdinPipe, args.webRelay)):
+            errMsg = "missing a mandatory option (-d, -u, -l, -m, -r, -g, -c, --wizard, --shell, --update, --purge, --list-tampers, --dependencies or --web-relay). "
             errMsg += "Use -h for basic and -hh for advanced help\n"
             parser.error(errMsg)
 

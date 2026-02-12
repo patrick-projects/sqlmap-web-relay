@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --bg: #1a1e26;
+      --surface: #232932;
+      --border: #2d3544;
+      --text: #e2e6ed;
+      --dim: #8b929d;
+      --accent: #00c896;
+      --warn: #f0b429;
+      --error: #e85d75;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font: 14px system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      width: 420px;
+      min-height: 420px;
+      padding: 16px;
+    }
+    h1 { font-size: 15px; color: var(--accent); margin-bottom: 12px; }
+    label { display: block; font-size: 11px; color: var(--dim); margin-bottom: 4px; }
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--accent); }
+    .row { display: flex; gap: 12px; align-items: center; }
+    .row > * { flex: 1; }
+    button {
+      background: var(--accent);
+      color: #0d0f12;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    button:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .sec { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+    .log {
+      font: 12px monospace;
+      background: #0d0f12;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 10px;
+      max-height: 120px;
+      overflow-y: auto;
+      margin-top: 12px;
+      color: var(--dim);
+    }
+    .log .warn { color: var(--warn); }
+    .log .ok { color: var(--accent); }
+    .log .err { color: var(--error); }
+    .findings { margin-top: 12px; }
+    .finding { padding: 8px; margin-bottom: 6px; border-radius: 4px; font-size: 12px; }
+    .finding.suspect { background: rgba(232,93,117,0.2); border: 1px solid var(--error); }
+    .finding.ok { background: rgba(139,146,157,0.1); color: var(--dim); }
+    .param { font-weight: 600; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <h1>sqlmap Browser Scanner</h1>
+  <p style="font-size: 11px; color: var(--dim); margin-bottom: 12px;">
+    Scans run in your browser — requests originate from your machine. No Python required.
+  </p>
+
+  <div class="sec">
+    <label>Target URL</label>
+    <input type="url" id="url" placeholder="https://example.com/page?id=1">
+  </div>
+  <div class="sec">
+    <label>POST data (optional, for form submissions)</label>
+    <input type="text" id="postData" placeholder="username=admin&password=test">
+  </div>
+
+  <div class="sec row">
+    <div>
+      <label>Technique</label>
+      <select id="technique">
+        <option value="all">All (boolean, time, error)</option>
+        <option value="boolean">Boolean blind only</option>
+        <option value="time">Time-based only</option>
+        <option value="error">Error-based only</option>
+      </select>
+    </div>
+  </div>
+
+  <button id="scanBtn">Scan</button>
+  <button id="useCurrent" style="background: var(--surface); color: var(--text); margin-left: 8px;">Use current tab</button>
+
+  <div id="log" class="log" style="display: none;"></div>
+  <div id="findings" class="findings"></div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
